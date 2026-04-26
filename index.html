@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 ぐるデト（GURU-DATE） - デート・ルーレット & 検索 🎰</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&display=swap');
+
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            text-align: center;
+            /* --- 【変更】ポップな水玉背景 --- */
+            background-color: #fff0f5; /* ベースのピンク */
+            /* 白いドットを描く魔法のCSS */
+            background-image: radial-gradient(#ffffff 10%, transparent 10%);
+            background-size: 15px 15px; /* ドットの大きさと間隔 */
+            color: #5c4b51;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #ff8e9d;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #ffffff;
+            line-height: 1.2;
+        }
+        
+        p.sub-title {
+            color: #ffb1bd;
+            margin-top: 0;
+            font-weight: bold;
+            line-height: 1.4;
+            font-size: 1rem;
+            /* 文字の後ろに少し白を混ぜて読みやすく */
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+
+        select {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            border: 3px solid #ffb6c1;
+            background-color: #ffffff;
+            color: #ff8e9d;
+            font-family: inherit;
+            font-weight: bold;
+            outline: none;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+        }
+
+        .slot-machine {
+            background: #ffdb8b;
+            border: 8px solid #ffc15e;
+            border-radius: 30px;
+            padding: 25px 20px;
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 10px 0 #eba634, 0 15px 20px rgba(0,0,0,0.15);
+        }
+
+        .slot-container {
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
+            border: 5px solid #ffb6c1;
+            border-radius: 20px;
+            height: 100px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.05);
+        }
+
+        .reel { width: 45%; text-align: center; position: relative; }
+        
+        .reel-title {
+            font-size: 12px;
+            color: #ff8e9d;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 11;
+            font-weight: bold;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .reel-items {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: top 0.1s ease-out;
+        }
+        
+        .slot-item {
+            height: 60px;
+            line-height: 60px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #5c4b51;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        button#spinButton {
+            padding: 15px 40px;
+            font-size: 22px;
+            cursor: pointer;
+            background: #ff8e9d;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            box-shadow: 0 8px 0 #d96978;
+            transition: all 0.1s;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+        button#spinButton:active { transform: translateY(5px); box-shadow: 0 3px 0 #d96978; }
+        button:disabled { background: #e0e0e0; box-shadow: 0 8px 0 #bdbdbd; color: #9e9e9e; }
+
+        #searchButton {
+            display: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #ff4500;
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #b33000;
+            margin: 10px auto;
+            width: fit-content;
+        }
+        #searchButton:active { transform: translateY(2px); box-shadow: 0 2px 0 #b33000; }
+
+        #missionBox {
+            display: none;
+            background-color: #fffaf0;
+            border: 2px dashed #ffb6c1;
+            padding: 10px;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .is-spinning { animation: spinReel 0.15s linear infinite; }
+        @keyframes spinReel { 0% { top: 0px; } 100% { top: -180px; } }
+
+        #finalResult {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 20px;
+            border: 4px dashed #ffb6c1;
+            min-height: 50px;
+            margin-top: 10px;
+        }
+        .result-text { font-size: 1.1rem; color: #5c4b51; margin: 5px 0; }
+        .highlight { color: #ff8e9d; font-weight: bold; font-size: 1.3rem;}
+    </style>
+</head>
+<body>
+    <h1>🎰 ぐるデト（GURU-DATE） 🎰</h1>
+    <p class="sub-title">🎰 デート・ルーレット 🎰<br>スロットで決める、今日の行き先</p>
+
+    <p>エリアを選んでね！</p>
+    <select id="areaSelect" onchange="updateReelData()">
+        <option value="osaka">大阪エリア</option>
+        <option value="tokyo">東京エリア</option>
+        <option value="kanagawa">神奈川エリア</option>
+    </select>
+    <br>
+
+    <div class="slot-machine">
+        <div class="slot-container">
+            <div class="reel">
+                <div class="reel-title">AREA</div>
+                <div id="locationReel" class="reel-items"></div>
+            </div>
+            <div class="reel">
+                <div class="reel-title">FOOD</div>
+                <div id="foodReel" class="reel-items"></div>
+            </div>
+        </div>
+
+        <button id="spinButton" onclick="spinAll()">レバーを引く！</button>
+        
+        <div id="finalResult">
+            <p class="result-text">（ここに結果が出ます）</p>
+            <div id="missionBox"></div>
+            <a id="searchButton" href="#" target="_blank">🔍 ホットペッパーで探す</a>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            "osaka": {
+                locations: ["梅田・大阪駅", "茶屋町・中崎町", "心斎橋・なんば", "天王寺・阿倍野", "北浜・淀屋橋", "京橋", "福島・野田", "新大阪・十三", "江坂・豊中", "池田・箕面"],
+                foods: ["居酒屋", "バル・ダイニングバー", "和食", "洋食", "イタリアン・フレンチ", "中華", "焼肉・ホルモン", "韓国料理", "アジア・エスニック", "カフェ・スイーツ"]
+            },
+            "tokyo": {
+                locations: ["新宿", "渋谷", "池袋", "銀座・有楽町", "東京駅周辺", "表参道・青山", "恵比寿・中目黒", "上野", "浅草", "吉祥寺"],
+                foods: ["居酒屋", "バル・ダイニングバー", "和食", "洋食", "イタリアン・フレンチ", "中華", "焼肉・ホルモン", "韓国料理", "アジア・エスニック", "カフェ・スイーツ"]
+            },
+            "kanagawa": {
+                locations: ["横浜駅", "みなとみらい", "関内・馬車道", "元町・中華街", "川崎", "武蔵小杉", "鎌倉", "藤沢・江ノ島", "横須賀", "小田原"],
+                foods: ["居酒屋", "バル・ダイニングバー", "和食", "洋食", "イタリアン・フレンチ", "中華", "焼肉・ホルモン", "韓国料理", "アジア・エスニック", "カフェ・スイーツ"]
+            }
+        };
+
+        const missions = [
+            "💡 今日のミッション：相手の今日の服装や髪型を褒める！",
+            "💡 今日のミッション：食事中、1回だけスマホを裏返して会話に集中する",
+            "💡 今日のミッション：いつもは選ばないようなメニューを1つ頼んでみる！",
+            "💡 今日のミッション：今日一番の笑顔でツーショット写真を1枚撮る📸",
+            "💡 今日のミッション：一口目を食べるときは、最高に美味しそうなリアクションをする😋",
+            "💡 今日のミッション：帰り道に「今日の楽しかったこと」を3つ言い合う",
+            "💡 今日のミッション：相手に日頃のちょっとした「ありがとう」を伝える",
+            "💡 今日のミッション：次に二人で行きたい場所を1つ決める！"
+        ];
+
+        const locationReelItems = document.getElementById("locationReel");
+        const foodReelItems = document.getElementById("foodReel");
+        const spinButton = document.getElementById("spinButton");
+        const searchButton = document.getElementById("searchButton");
+        const missionBox = document.getElementById("missionBox");
+        const areaSelect = document.getElementById("areaSelect");
+        const finalResult = document.getElementById("finalResult");
+
+        function updateReelData() {
+            const area = areaSelect.value;
+            createReelHTML(locationReelItems, data[area].locations);
+            createReelHTML(foodReelItems, data[area].foods);
+            resetResult();
+        }
+
+        function createReelHTML(reelElement, items) {
+            let html = '';
+            const extendedItems = [...items, ...items, ...items];
+            extendedItems.forEach(item => {
+                html += `<div class="slot-item">${item}</div>`;
+            });
+            reelElement.innerHTML = html;
+            reelElement.style.top = "0px"; 
+        }
+
+        function resetResult() {
+            finalResult.querySelector('.result-text').innerText = "準備OK！レバーを引いてね✨";
+            searchButton.style.display = "none";
+            missionBox.style.display = "none";
+        }
+
+        function spinAll() {
+            const area = areaSelect.value;
+            const currentLocations = data[area].locations;
+            const currentFoods = data[area].foods;
+
+            spinButton.disabled = true;
+            searchButton.style.display = "none";
+            missionBox.style.display = "none";
+            finalResult.querySelector('.result-text').innerText = "運命の瞬間...！ドキドキ💓";
+
+            locationReelItems.classList.add('is-spinning');
+            foodReelItems.classList.add('is-spinning');
+
+            const locIndex = Math.floor(Math.random() * currentLocations.length);
+            const foodIndex = Math.floor(Math.random() * currentFoods.length);
+            const missionIndex = Math.floor(Math.random() * missions.length);
+
+            setTimeout(() => stopReel(locationReelItems, locIndex), 1500);
+            setTimeout(() => stopReel(foodReelItems, foodIndex), 2500);
+
+            setTimeout(() => {
+                const finalLoc = currentLocations[locIndex];
+                const finalFood = currentFoods[foodIndex];
+                
+                finalResult.querySelector('.result-text').innerHTML = `
+                    <span class="highlight">「${finalLoc}」</span> で <br> <span class="highlight">「${finalFood}」</span> に決定！🎉
+                `;
+
+                missionBox.innerText = missions[missionIndex];
+                missionBox.style.display = "block";
+
+                const searchUrl = `https://www.hotpepper.jp/keyword/?kwd=${encodeURIComponent(finalLoc + ' ' + finalFood)}`;
+                searchButton.href = searchUrl;
+                searchButton.style.display = "block";
+
+                spinButton.disabled = false;
+                spinButton.innerText = "もう１回！";
+            }, 3000);
+        }
+
+        function stopReel(reelElement, targetIndex) {
+            reelElement.classList.remove('is-spinning'); 
+            const itemHeight = 60;
+            const dataLength = reelElement.children.length / 3;
+            const stopPosition = 20 - ((dataLength + targetIndex) * itemHeight);
+            reelElement.style.top = stopPosition + "px";
+        }
+
+        updateReelData();
+    </script>
+</body>
+</html>
