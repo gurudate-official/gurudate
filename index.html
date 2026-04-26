@@ -53,15 +53,16 @@
         }
 
         .slot-machine {
-            background: #ffdb8b;
-            border: 8px solid #ffc15e;
-            border-radius: 30px;
-            padding: 25px 20px;
-            width: 90%;
-            max-width: 400px;
-            margin: 0 auto;
-            box-shadow: 0 10px 0 #eba634, 0 15px 20px rgba(0,0,0,0.15);
-        }
+    background: #ffdb8b;
+    border: 8px solid #ffc15e;
+    border-radius: 30px;
+    padding: 25px 20px;
+    width: 95%;           /* 90%から95%に少し広げます */
+    max-width: 400px;
+    margin: 20px auto;    /* 上下に隙間を作り、左右は自動で真ん中に */
+    box-shadow: 0 10px 0 #eba634, 0 15px 20px rgba(0,0,0,0.15);
+    box-sizing: border-box; /* 枠線の分だけ外にはみ出すのを防ぐ魔法の言葉です */
+}
 
         .slot-container {
             display: flex;
@@ -101,15 +102,20 @@
         }
         
         .slot-item {
-            height: 60px;
-            line-height: 60px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #5c4b51;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    height: 60px;
+    display: flex;           /* 縦横の真ん中に寄せる魔法 */
+    align-items: center;     /* 縦の真ん中 */
+    justify-content: center; /* 横の真ん中 */
+    font-size: 18px;
+    font-weight: bold;
+    color: #5c4b51;
+    text-align: center;
+    padding: 0 5px;
+    
+    /* ↓ ここが「二段にする」ための重要ポイント */
+    white-space: normal;     /* 改行を許可します */
+    line-height: 1.2;        /* 二段になった時の行間をギュッと詰めます */
+}
 
         button#spinButton {
             padding: 15px 40px;
