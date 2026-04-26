@@ -103,20 +103,21 @@
         
         .slot-item {
     height: 60px;
-    display: flex;           /* 縦横の真ん中に寄せる魔法 */
-    align-items: center;     /* 縦の真ん中 */
-    justify-content: center; /* 横の真ん中 */
-    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;        /* 18pxから1pxだけ小さくすると、さらに余裕が生まれます */
     font-weight: bold;
     color: #5c4b51;
     text-align: center;
-    padding: 0 5px;
+    padding: 0 4px;
     
-    /* ↓ ここが「二段にする」ための重要ポイント */
-    white-space: normal;     /* 改行を許可します */
-    line-height: 1.2;        /* 二段になった時の行間をギュッと詰めます */
+    /* ↓ ここを書き換え！「単語の途中で切らない」設定 */
+    white-space: normal;
+    line-height: 1.2;
+    word-break: normal;     /* どこでも切っていい（break-all）のをやめます */
+    overflow-wrap: break-word; /* どうしても入り切らない時だけ切る設定 */
 }
-
         button#spinButton {
             padding: 15px 40px;
             font-size: 22px;
